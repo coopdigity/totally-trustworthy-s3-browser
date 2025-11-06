@@ -16,13 +16,8 @@ import type { S3Bucket, S3ListResult, S3Object } from '@shared/types'
 
 export class S3Service {
   private client: S3Client | null = null
-  private currentProfile: string | null = null
-  private currentRegion: string | null = null
 
   setProfile(profileName: string, region: string) {
-    this.currentProfile = profileName
-    this.currentRegion = region
-
     const credentials = fromIni({ profile: profileName })
 
     this.client = new S3Client({

@@ -1,8 +1,9 @@
 {
   "name": "s3browser",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Cross-platform S3 bucket browser",
   "main": "dist-electron/main/main.js",
+  "author": "Jeremiah Cooper <jbzcooper@gmail.com> (https://coopdigity.com/)",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build && electron-builder",
@@ -34,23 +35,28 @@
   "build": {
     "appId": "com.resight.s3browser",
     "productName": "S3 Browser",
+    "icon": "src/renderer/assets/pinky-promise-outline.png",
     "directories": {
       "output": "release"
     },
     "files": [
       "dist/**/*",
-      "dist-electron/**/*"
+      "dist-electron/**/*",
+      "src/renderer/assets/pinky-promise-outline.png"
     ],
     "mac": {
       "category": "public.app-category.developer-tools",
-      "target": ["dmg", "zip"]
+      "target": ["dmg", "zip"],
+      "icon": "src/renderer/assets/pinky-promise-outline.png"
     },
     "win": {
-      "target": ["nsis", "portable"]
+      "target": ["nsis", "portable"],
+      "icon": "src/renderer/assets/pinky-promise-outline.png"
     },
     "linux": {
-      "target": ["AppImage", "deb", "rpm"],
-      "category": "Development"
+      "target": ["AppImage"],
+      "category": "Development",
+      "icon": "src/renderer/assets/pinky-promise-outline.png"
     }
   }
 }
