@@ -2,13 +2,13 @@
 A cross-platform desktop application for browsing and managing AWS S3 buckets with an intuitive file explorer interface.
 
 ### Does this sound fun?
-```
-"Hey look! A free S3 Browser made by a no-name company nobody at the BBB recognizes!! Sweet!"
 
----- 30 minutes later ----
+> "Hey look! A free S3 Browser made by a no-name company nobody at the BBB recognizes!! Sweet!"
+> 
+> ---- 30 minutes later ----
+> 
+> "Hey Look! SOMEHOW my AWS keys were stolen, my account hijacked, and customer data encrypted & exfiltrated to China. Jeepers me!"
 
-"Hey Look! SOMEHOW my AWS keys were stolen, my account hijacked, and customer data encrypted & exfiltrated to China. Jeepers me!"
-```
 
 Yeah, that doesn't sound good to me either. Yet, I loath trying to find a file in S3 through the AWS web console or CLI. Why _isn't_ there a trustworthy OSS option?
 
