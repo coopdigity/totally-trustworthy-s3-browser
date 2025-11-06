@@ -16,7 +16,7 @@ Well thanks to Claude, now there is.  The first pass of this took roughly 2 or 3
 
 ## Disclaimers
 
-1. I do not plan to provide binary builds. That defeats the principle of not putting your most sensitive keys into software you can't introspect. If you can't build this on your own, maybe you shouldn't be using software?
+1. I do not plan to provide binary builds. That defeats the principle of not putting your most sensitive keys into software you can't introspect. If you can't build this on your own, maybe you shouldn't be using Github?
 2.  Use this at your own risk. I do.
 3. Since this was kind of lark, I don't have a roadmap but you can certainly raise an issue, fork, or PR if you find a bug, want to totally steal my AI generated code, or add and improvement.
 
