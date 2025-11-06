@@ -1,4 +1,5 @@
-# Totally Trustworthy S3 Browser<SUP>TM</SUP> 🤝
+# Totally Trustworthy S3 Browser<SUP>TM</SUP> <img src="src/renderer/assets/pinky-promise-outline.png" alt="You can trust me. Pinky Promise!" width="30" align=""/>
+
 A cross-platform desktop application for browsing and managing AWS S3 buckets with an intuitive file explorer interface.
 
 ### Does this sound fun?
