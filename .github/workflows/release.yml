@@ -47,17 +47,29 @@ jobs:
           sudo apt-get install -y squashfs-tools
           sudo snap install snapcraft --classic
 
-      # Builds the host OS's targets and uploads them to the GitHub Release.
-      # The snap is published to the Release as an artifact (snap.publish=["github"]
-      # in package.json), NOT auto-pushed to the Snap Store — that happens in the
-      # dedicated step below so it can be gated on store approval.
+      # Build the host OS's targets only (no publish). electron-builder
+      # unconditionally routes snaps to the Snap Store on --publish, so we
+      # build with --publish never and upload artifacts ourselves below.
       # macOS is built UNSIGNED (no Apple cert) — users will see a Gatekeeper warning.
-      - name: Build & publish
-        run: npm run release
+      - name: Build
+        run: npm run dist
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Skip code signing on macOS — we ship unsigned for now.
           CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      # Upload all installers/packages to the GitHub Release for this tag.
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          fail_on_unmatched_files: false
+          files: |
+            release/*.dmg
+            release/*.zip
+            release/*.exe
+            release/*.AppImage
+            release/*.deb
+            release/*.snap
+            release/*.blockmap
 
       # Push the .snap to the Snap Store stable channel.
       # SNAPCRAFT_STORE_CREDENTIALS = output of `snapcraft export-login -`.
