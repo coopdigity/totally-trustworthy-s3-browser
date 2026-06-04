@@ -62,6 +62,7 @@
     "snap": {
       "confinement": "strict",
       "grade": "stable",
+      "publish": ["github"],
       "plugs": {
         "default": null,
         "dot-aws": {

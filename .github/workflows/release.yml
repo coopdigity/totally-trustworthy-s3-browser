@@ -27,10 +27,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 20
           cache: npm
@@ -47,7 +47,10 @@ jobs:
           sudo apt-get install -y squashfs-tools
           sudo snap install snapcraft --classic
 
-      # Builds the host OS's targets and publishes them to the GitHub Release.
+      # Builds the host OS's targets and uploads them to the GitHub Release.
+      # The snap is published to the Release as an artifact (snap.publish=["github"]
+      # in package.json), NOT auto-pushed to the Snap Store — that happens in the
+      # dedicated step below so it can be gated on store approval.
       # macOS is built UNSIGNED (no Apple cert) — users will see a Gatekeeper warning.
       - name: Build & publish
         run: npm run release
@@ -58,8 +61,12 @@ jobs:
 
       # Push the .snap to the Snap Store stable channel.
       # SNAPCRAFT_STORE_CREDENTIALS = output of `snapcraft export-login -`.
+      # continue-on-error until the personal-files store review is approved —
+      # the store rejects uploads until then. FLIP TO false once approved so
+      # store-push failures fail the build loudly.
       - name: Publish to Snap Store
         if: matrix.platform == 'linux'
+        continue-on-error: true
         run: snapcraft upload --release=stable release/*.snap
         env:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
