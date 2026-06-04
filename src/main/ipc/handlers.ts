@@ -14,7 +14,9 @@ export function setupIpcHandlers() {
   ipcMain.handle(IpcChannel.GET_PROFILES, async (): Promise<IpcResponse<any>> => {
     try {
       const profiles = await profileReader.getProfiles()
-      return { success: true, data: profiles }
+      // Never expose credentials to the renderer — only name + default region.
+      const safeProfiles = profiles.map(({ name, region }) => ({ name, region }))
+      return { success: true, data: safeProfiles }
     } catch (error) {
       return { success: false, error: (error as Error).message }
     }

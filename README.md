@@ -17,7 +17,9 @@ Well thanks to Claude, now there is.  The first pass of this took roughly 2 or 3
 
 ## Disclaimers
 
-1. I do not plan to provide binary builds. That defeats the principle of not putting your most sensitive keys into software you can't introspect. If you can't build this on your own, maybe you shouldn't be using Github?
+1. ~~I do not plan to provide binary builds. That defeats the principle of not putting your most sensitive keys into software you can't introspect. If you can't build this on your own, maybe you shouldn't be using Github?~~ **Update:** I've decided to provide binary builds after all, to make this easier to distribute to our employees and contractors. CI now publishes Windows, Linux, and macOS artifacts on every release tag (and pushes the Linux build to the Snap Store).
+
+   **But you should STILL build from scratch.** Seriously. This is your most sensitive cloud keys we're talking about — this is serious stuff, people. Do you actually know me? Am I a naughty person? Is every one of my dependencies uncompromised? You can't answer "yes" to all three, and neither can I. A binary is a black box. The source is not. If you can read code, read it, then build it yourself. The binaries exist for convenience, **not** as a substitute for due diligence.
 2.  Use this at your own risk. I do.
 3. Since this was kind of lark, I don't have a roadmap but you can certainly raise an issue, fork, or PR if you find a bug, want to totally steal my AI generated code, or add and improvement.
 
@@ -85,7 +87,7 @@ The build system uses electron-builder and supports:
 
 - **macOS**: DMG and ZIP
 - **Windows**: NSIS installer and portable executable
-- **Linux**: AppImage, DEB, and RPM packages
+- **Linux**: AppImage, DEB, and Snap packages
 
 ## Project Structure
 

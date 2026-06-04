@@ -1,0 +1,65 @@
+name: Build & Release
+
+# Builds Windows, Linux and macOS artifacts on every version tag (e.g. v1.2.3),
+# publishes them to a GitHub Release, and pushes the Linux .snap to the Snap Store.
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write # needed for electron-builder to create the GitHub Release
+
+jobs:
+  release:
+    name: ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            platform: mac
+          - os: windows-latest
+            platform: win
+          - os: ubuntu-latest
+            platform: linux
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # snapcraft uploads the built .snap; squashfs-tools lets electron-builder
+      # pack the .snap image.
+      - name: Install Linux packaging tools
+        if: matrix.platform == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y squashfs-tools
+          sudo snap install snapcraft --classic
+
+      # Builds the host OS's targets and publishes them to the GitHub Release.
+      # macOS is built UNSIGNED (no Apple cert) — users will see a Gatekeeper warning.
+      - name: Build & publish
+        run: npm run release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Skip code signing on macOS — we ship unsigned for now.
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      # Push the .snap to the Snap Store stable channel.
+      # SNAPCRAFT_STORE_CREDENTIALS = output of `snapcraft export-login -`.
+      - name: Publish to Snap Store
+        if: matrix.platform == 'linux'
+        run: snapcraft upload --release=stable release/*.snap
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}

@@ -1,8 +1,50 @@
-import { app, BrowserWindow, Menu } from 'electron'
+import { app, BrowserWindow, Menu, session, shell } from 'electron'
 import { join } from 'path'
 import { setupIpcHandlers } from './ipc/handlers'
 
 let mainWindow: BrowserWindow | null = null
+
+const isDev = !!process.env.VITE_DEV_SERVER_URL
+
+function applySecurityPolicies() {
+  // Lock down navigation: block in-app navigation away from the app and open
+  // any external link in the user's real browser instead of an Electron window.
+  app.on('web-contents-created', (_event, contents) => {
+    contents.on('will-navigate', (event, url) => {
+      if (url !== contents.getURL()) {
+        event.preventDefault()
+      }
+    })
+    contents.setWindowOpenHandler(({ url }) => {
+      if (url.startsWith('https://')) {
+        shell.openExternal(url)
+      }
+      return { action: 'deny' }
+    })
+  })
+
+  // Production-only CSP. Dev is skipped so Vite HMR (ws + eval) keeps working.
+  if (isDev) return
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        'Content-Security-Policy': [
+          "default-src 'self'; " +
+            "script-src 'self'; " +
+            // Element Plus injects runtime <style> tags.
+            "style-src 'self' 'unsafe-inline'; " +
+            "img-src 'self' data:; " +
+            "font-src 'self' data:; " +
+            "connect-src 'self'; " +
+            "object-src 'none'; " +
+            "base-uri 'none'; " +
+            "frame-ancestors 'none'"
+        ]
+      }
+    })
+  })
+}
 
 function createWindow() {
   // Hide the default menu bar
@@ -34,6 +76,7 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  applySecurityPolicies()
   setupIpcHandlers()
   createWindow()
 

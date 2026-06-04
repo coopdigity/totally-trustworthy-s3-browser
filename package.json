@@ -1,5 +1,5 @@
 {
-  "name": "s3browser",
+  "name": "totally-trustworthy-s3-browser",
   "version": "1.0.0",
   "description": "Cross-platform S3 bucket browser",
   "main": "dist-electron/main/main.js",
@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build && electron-builder",
+    "release": "vue-tsc --noEmit && vite build && electron-builder --publish always",
     "preview": "vite preview",
     "electron:dev": "vite --mode electron",
     "electron:build": "vue-tsc --noEmit && vite build --mode electron && electron-builder"
@@ -54,9 +55,23 @@
       "icon": "src/renderer/assets/pinky-promise-outline.png"
     },
     "linux": {
-      "target": ["AppImage"],
+      "target": ["AppImage", "deb", "snap"],
       "category": "Development",
       "icon": "src/renderer/assets/pinky-promise-outline.png"
+    },
+    "snap": {
+      "confinement": "strict",
+      "grade": "stable",
+      "plugs": {
+        "default": null,
+        "dot-aws": {
+          "interface": "personal-files",
+          "read": ["$HOME/.aws"]
+        }
+      }
+    },
+    "publish": {
+      "provider": "github"
     }
   }
 }

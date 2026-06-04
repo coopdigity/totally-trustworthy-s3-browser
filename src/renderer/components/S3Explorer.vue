@@ -1,5 +1,11 @@
 <template>
-  <div class="s3-explorer">
+  <div
+    class="s3-explorer"
+    :class="{ 'drag-over': isDragging }"
+    @drop.prevent="handleDrop"
+    @dragover.prevent="handleDragOver"
+    @dragleave="handleDragLeave"
+  >
     <div class="explorer-header">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item @click="navigateToRoot">
@@ -58,10 +64,6 @@
       style="width: 100%"
       @row-click="handleRowClick"
       :row-class-name="getRowClassName"
-      @drop.prevent="handleDrop"
-      @dragover.prevent="handleDragOver"
-      @dragleave="handleDragLeave"
-      :class="{ 'drag-over': isDragging }"
     >
       <el-table-column label="Actions" width="180" align="left">
         <template #default="scope">
@@ -263,8 +265,23 @@ function handleDownloadClick(item: DisplayItem) {
   emit('download', props.bucket, item.key)
 }
 
-function handlePreviewClick(item: DisplayItem) {
-  emit('preview', props.bucket, item.key)
+async function handlePreviewClick(item: DisplayItem) {
+  try {
+    await ElMessageBox.confirm(
+      `This downloads <strong>${escapeHtml(item.displayName)}</strong> and opens it with your system's default application. ` +
+        `Only preview files you trust.`,
+      'Open Preview',
+      {
+        confirmButtonText: 'Open',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+        dangerouslyUseHTMLString: true
+      }
+    )
+    emit('preview', props.bucket, item.key)
+  } catch {
+    // User cancelled
+  }
 }
 
 function handleCopyPath(item: DisplayItem) {
@@ -322,7 +339,7 @@ async function handleDeleteClick(item: DisplayItem) {
 
   try {
     await ElMessageBox.confirm(
-      `Are you sure you want to delete this ${itemType}?<br><strong>${item.displayName}</strong>`,
+      `Are you sure you want to delete this ${itemType}?<br><strong>${escapeHtml(item.displayName)}</strong>`,
       'Confirm Delete',
       {
         confirmButtonText: 'Delete',
@@ -388,7 +405,7 @@ async function handleDrop(event: DragEvent) {
   if (filePaths.length <= 10) {
     fileListHtml = '<ul style="text-align: left; max-height: 300px; overflow-y: auto;">'
     filePaths.forEach(file => {
-      fileListHtml += `<li>${file.name}</li>`
+      fileListHtml += `<li>${escapeHtml(file.name)}</li>`
     })
     fileListHtml += '</ul>'
   } else {
@@ -400,7 +417,7 @@ async function handleDrop(event: DragEvent) {
   try {
     await ElMessageBox.confirm(
       `<div>
-        <p>Upload the following files to <strong>s3://${props.bucket}/${currentPath}</strong>?</p>
+        <p>Upload the following files to <strong>s3://${escapeHtml(props.bucket)}/${escapeHtml(currentPath)}</strong>?</p>
         ${fileListHtml}
       </div>`,
       'Confirm Upload',
@@ -448,6 +465,17 @@ async function handleDrop(event: DragEvent) {
   } catch {
     // User cancelled
   }
+}
+
+// Escape HTML before injecting into ElMessageBox (dangerouslyUseHTMLString).
+// S3 keys / dropped filenames are untrusted and must not be rendered as markup.
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
 }
 
 function getRowClassName({ row }: { row: DisplayItem }) {
