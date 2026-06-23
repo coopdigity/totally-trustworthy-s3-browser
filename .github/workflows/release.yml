@@ -79,12 +79,10 @@ jobs:
 
       # Push the .snap to the Snap Store stable channel.
       # SNAPCRAFT_STORE_CREDENTIALS = output of `snapcraft export-login -`.
-      # continue-on-error until the personal-files store review is approved —
-      # the store rejects uploads until then. FLIP TO false once approved so
-      # store-push failures fail the build loudly.
+      # The personal-files (dot-aws) connection grant is live, so uploads now
+      # pass automatic review — store-push failures should fail the build.
       - name: Publish to Snap Store
         if: matrix.platform == 'linux' && startsWith(github.ref, 'refs/tags/v')
-        continue-on-error: true
         run: snapcraft upload --release=stable release/*.snap
         env:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}

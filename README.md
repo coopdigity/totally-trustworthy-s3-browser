@@ -57,6 +57,25 @@ Well thanks to Claude, now there is.  The first pass of this took roughly 2 or 3
 
 ## Installation
 
+### From the Snap Store (Linux)
+
+```bash
+sudo snap install totally-trustworthy-s3-browser
+```
+
+The app reads your AWS credentials from `~/.aws`, a hidden directory the snap
+sandbox can't reach by default. Grant read access once after installing:
+
+```bash
+sudo snap connect totally-trustworthy-s3-browser:dot-aws
+```
+
+Without this connection the app launches but shows no profiles. (Access is
+read-only and scoped to `~/.aws`; see the `personal-files` plug in
+`package.json`.)
+
+### From source
+
 ```bash
 npm install
 ```
